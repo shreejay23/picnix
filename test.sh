@@ -1,0 +1,1 @@
+curl -X POST -F "image=@some.png" http://localhost:8000/upload/

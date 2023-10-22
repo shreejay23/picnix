@@ -1,3 +1,5 @@
+// does not work
+
 const formData = new FormData();
 formData.append('image', new File(['./some.png'], 'some.png'));
 
