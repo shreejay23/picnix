@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "picnix",
+    "picnix_backbone",
     "rest_framework",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -78,7 +78,7 @@ WSGI_APPLICATION = "picnix.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "db_local.sqlite3",
     }
 }
 
