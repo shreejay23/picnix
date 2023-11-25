@@ -2,3 +2,6 @@ django
 djangorestframework
 Pillow
 imagehash
+opencv-python
+numpy
+scikit-learn
