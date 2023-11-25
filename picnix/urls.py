@@ -21,4 +21,6 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("upload/", views.upload),
+    path("picnix/", views.process_test_image),
+    path("delete_images/", views.delete_all_images)
 ]
