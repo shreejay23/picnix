@@ -16,8 +16,11 @@ Including another URLconf
 """
 from django.urls import path
 from . import views
+from . import processor
+
 urlpatterns = [
     path("upload/", views.upload),
-    path("picnix/", views.process_test_image),
+    # will be replaced by a queue
+    path("picnix/", processor.process_uploaded_image),
     path("delete_images/", views.delete_all_images)
 ]
