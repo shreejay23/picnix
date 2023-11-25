@@ -21,7 +21,6 @@ def identify_cluster(post_image, cluster_centers):
 
 def recluster_images(num_clusters):
     db_images = models.Image.objects.all()
-    num_clusters = 5
     features, labels = ImageFeatures().extract_features_from_db_images(db_images)
 
     def cluster_images(features, num_clusters):
@@ -32,7 +31,7 @@ def recluster_images(num_clusters):
     cluster_labels, cluster_centers = cluster_images(
         features, num_clusters)
 
-    return num_clusters, labels, cluster_labels, cluster_centers
+    return labels, cluster_labels, cluster_centers
 
 
 @api_view(['POST'])
