@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from . import models
 from rest_framework.decorators import api_view
-from picnix_backbone.app_utils import *
 from picnix_processor.tasks import process_task
 
 
