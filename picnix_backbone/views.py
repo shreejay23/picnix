@@ -23,10 +23,10 @@ def upload(request, format=None):
     image = models.Image(image=uploaded_image)
     image.save()
 
-    post = models.Post(image_id=image, user=username, description=description)
+    post = models.Post(image=image, user=username, description=description)
     post.save()
 
-    process_task.delay(sender="SendingApp", data="Some data to process")
+    process_task.delay(sender="Uploader", image_id=image.id)
     return JsonResponse({'message': 'Image uploaded successfully', 'body': {'postId': post.id}})
 
 

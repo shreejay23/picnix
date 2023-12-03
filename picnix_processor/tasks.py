@@ -1,9 +1,9 @@
-from celery import shared_task
 import numpy as np
+from celery import shared_task
 from sklearn.cluster import KMeans
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
-from rest_framework.decorators import api_view
 from picnix_backbone import models
 from picnix_processor.app_utils import *
 from picnix_processor.ImageFeatures import ImageFeatures
@@ -35,36 +35,29 @@ def recluster_images(num_clusters):
     return labels, cluster_labels, cluster_centers
 
 
-@api_view(['POST'])
-def process_uploaded_image(request, format=None):
-    if request.method == 'POST' and request.FILES.get('image'):
-        uploaded_image = request.FILES['image']
+def process_uploaded_image(image_id):
+    image = get_object_or_404(models.Image, id=image_id)
+    img_path = get_image_path(image)
 
-        # saving image before processing. will be removed
-        image = models.Image(image=uploaded_image)
-        image.save()
-        uploaded_image = models.Image.objects.last()
-        img_path = get_image_path(uploaded_image)
+    # future work: only run this if total images > threshold
+    num_clusters = 5
+    labels, cluster_labels, cluster_centers = recluster_images(
+        num_clusters)
+    print_clusters(num_clusters, labels, cluster_labels)
 
-        # future work: only run this if total images > threshold
-        num_clusters = 5
-        labels, cluster_labels, cluster_centers = recluster_images(
-            num_clusters)
-        print_clusters(num_clusters, labels, cluster_labels)
+    top_clusters = identify_cluster(img_path, cluster_centers)
 
-        top_clusters = identify_cluster(img_path, cluster_centers)
+    print(f"\nTest image belongs to clusters: {top_clusters}")
 
-        print(f"\nTest image belongs to clusters: {top_clusters}")
-
-        return JsonResponse({'message': 'Image processed successfully'})
-
-    return JsonResponse({'error': 'No image file provided'}, status=400)
+    return JsonResponse({'message': 'Image processed successfully'})
 
 
 @shared_task
-def process_task(data, **kwargs):
+def process_task(image_id, **kwargs):
     # Your processing logic here
-    print(f"Processing task with data: {data}")
-    import time
-    time.sleep(5)
-    print("Task completed")
+    print("Received image: {}".format(image_id))
+    try:
+        process_uploaded_image(image_id)
+        print("Processed image: {}".format(image_id))
+    except Exception as e:
+        print("Error processing image: {}".format(e))
