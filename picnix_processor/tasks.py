@@ -2,7 +2,6 @@
 # processor/tasks.py
 
 from celery import shared_task
-from picnix_backbone.signals import task_signal
 
 
 @shared_task
