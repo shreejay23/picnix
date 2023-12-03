@@ -5,3 +5,4 @@ imagehash
 opencv-python
 numpy
 scikit-learn
+celery[redis]
