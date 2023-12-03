@@ -1,8 +1,10 @@
-echo "\nCase 1"
-curl -X POST -F "image=@2.jpg" http://localhost:8000/api/upload/
+# echo "\nCase 2"
 
-echo "\nCase 10"
-curl -X POST -F "image=@copy.png" http://localhost:8000/api/picnix/
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@copy2.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
 
 # echo "\nCase 2"
 # curl -X POST -F "image=@../AP/PicNix/images/test/image_2.png" http://localhost:8000/upload/
