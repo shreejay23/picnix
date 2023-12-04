@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
 from . import models
 from rest_framework.decorators import api_view
@@ -20,13 +21,13 @@ def upload(request, format=None):
     if not username or not description:
         return JsonResponse({'error': 'All required fields not present'}, status=400)
 
-    image = models.Image(image=uploaded_image)
+    image = models.Image(image=uploaded_image, num_refs=0)
     image.save()
 
     post = models.Post(image=image, user=username, description=description)
     post.save()
 
-    process_task.delay(sender="Uploader", image_id=image.id)
+    process_task.delay(sender="Uploader", image_id=image.id)  # send post id
     return JsonResponse({'message': 'Image uploaded successfully', 'body': {'postId': post.id}})
 
 
@@ -39,6 +40,56 @@ def get_post(request, id):
     }
 
     return JsonResponse(response_data)
+
+
+@api_view(['GET'])
+def get_all_posts(request, format=None):
+    PAGE_SIZE = 10
+
+    page = request.GET.get('page', 1)
+    similar_to = request.GET.get('similar_to')
+    duplicate_to = request.GET.get('duplicate_to')
+
+    if similar_to and duplicate_to:
+        return JsonResponse({'error': 'Bad Request'}, status=400)
+
+    _from = (page-1)*PAGE_SIZE
+    _to = (page)*PAGE_SIZE
+
+    posts = models.Post.objects.all().order_by('-timestamp')[_from:_to]
+
+    image_ids = list(map(lambda post: post.image.id, posts))
+    image_similarity_map = get_image_similarities(image_ids)
+
+    response_data = [{
+        'id': post.id,
+        'image': request.build_absolute_uri(post.image.image.url),
+        'desc': post.description,
+        'user': post.user,
+        'similars': image_similarity_map[post.image.id],
+        'duplicates': post.image.num_refs,
+    } for post in posts]
+
+    return JsonResponse(response_data, safe=False)
+
+
+def get_image_similarities(image_ids):
+    image_cluster_map = {image.image_id: image.cluster_id for image in models.ImageCluster.objects.filter(
+        image_id__in=image_ids)}
+    print(image_cluster_map)
+    cluster_counts = models.ImageCluster.objects.values(
+        'cluster_id').annotate(count=Count('cluster_id'))
+    cluster_count_map = {}
+    for cluster_count in cluster_counts:
+        cluster_id = cluster_count['cluster_id']
+        cluster_count_map[cluster_id] = cluster_count['count']
+
+    image_similarity_map = {}
+    for image_id in image_ids:
+        cluster_id = image_cluster_map[image_id]
+        image_similarity_map[image_id] = cluster_count_map[cluster_id]
+
+    return image_similarity_map
 
 
 @api_view(['POST'])
