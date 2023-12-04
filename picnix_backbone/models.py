@@ -2,7 +2,7 @@ from django.db import models
 
 
 class ImageCluster(models.Model):
-    image_id = models.IntegerField()
+    image_id = models.IntegerField(primary_key=True)
     cluster_id = models.IntegerField()
 
     def __str__(self) -> str:

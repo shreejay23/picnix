@@ -12,13 +12,16 @@ from picnix_processor.ImageFeatures import ImageFeatures
 
 
 def identify_cluster(cluster_centers, image_moments):
-    distances = np.linalg.norm(np.array(cluster_centers) - np.array(image_moments), axis=1)
+    distances = np.linalg.norm(
+        np.array(cluster_centers) - np.array(image_moments), axis=1)
     sorted_clusters = np.argsort(distances)
 
     return distances, sorted_clusters[:2]
 
+
 def check_for_exact_image_match(cluster_label, image1_path):
-    imageClusters = models.ImageCluster.objects.filter(cluster_id = cluster_label)
+    imageClusters = models.ImageCluster.objects.filter(
+        cluster_id=cluster_label)
     for imageCluster in imageClusters:
         image2 = get_object_or_404(models.Image, id=imageCluster.image_id)
         image2_path = get_image_path(image2)
@@ -26,15 +29,18 @@ def check_for_exact_image_match(cluster_label, image1_path):
             return True
     return False
 
-def process_uploaded_image(image_id):
+
+def process_uploaded_image(post_id, image_id):
     image = get_object_or_404(models.Image, id=image_id)
     img_path = get_image_path(image)
 
     threshold = 0.0003
 
     clusterInfo_objects = models.ClusterInfo.objects.all().order_by('cluster_id')
-    cluster_centers = [get_cluster_center_in_nums(clusterInfo_object.cluster_center) for clusterInfo_object in clusterInfo_objects]
-    cluster_labels = [clusterInfo_object.cluster_id for clusterInfo_object in clusterInfo_objects]
+    cluster_centers = [get_cluster_center_in_nums(
+        clusterInfo_object.cluster_center) for clusterInfo_object in clusterInfo_objects]
+    cluster_labels = [
+        clusterInfo_object.cluster_id for clusterInfo_object in clusterInfo_objects]
     # print("LABELS")
     # print(cluster_labels)
 
@@ -44,15 +50,18 @@ def process_uploaded_image(image_id):
 
     if n < 1:
         image_cluster_label = n + 1
-        new_clusterInfo = models.ClusterInfo(cluster_id = image_cluster_label, cluster_center = get_cluster_center_in_text(image_moments))
+        new_clusterInfo = models.ClusterInfo(
+            cluster_id=image_cluster_label, cluster_center=get_cluster_center_in_text(image_moments))
         new_clusterInfo.save()
 
-        imageCluster = models.ImageCluster(cluster_id = image_cluster_label, image_id = image.id)
+        imageCluster = models.ImageCluster(
+            cluster_id=image_cluster_label, image_id=image.id)
         imageCluster.save()
 
         return image_cluster_label
 
-    scores, sorted_clusters_indices = identify_cluster(cluster_centers, image_moments)
+    scores, sorted_clusters_indices = identify_cluster(
+        cluster_centers, image_moments)
 
     # print("Scores:")
     # print(scores)
@@ -73,19 +82,26 @@ def process_uploaded_image(image_id):
     if scores[ind] > threshold:
         flag = True
     else:
-        near_duplicate_cluster = models.ClusterInfo.objects.get(cluster_id = image_cluster_label)
-        near_duplicate_cluster_centers = get_cluster_center_in_nums(near_duplicate_cluster.cluster_center)
+        near_duplicate_cluster = models.ClusterInfo.objects.get(
+            cluster_id=image_cluster_label)
+        near_duplicate_cluster_centers = get_cluster_center_in_nums(
+            near_duplicate_cluster.cluster_center)
         # print("Cluster centers")
-        prev_cluster_length = models.ImageCluster.objects.filter(cluster_id = image_cluster_label).count()
-        temp_numerator = [prev_cluster_length * num for num in near_duplicate_cluster_centers]
+        prev_cluster_length = models.ImageCluster.objects.filter(
+            cluster_id=image_cluster_label).count()
+        temp_numerator = [prev_cluster_length *
+                          num for num in near_duplicate_cluster_centers]
         for i in range(len(image_moments)):
             temp_numerator[i] += image_moments[i]
-        new_cluster_centers = [num / (prev_cluster_length + 1) for num in temp_numerator]
-        models.ClusterInfo.objects.filter(cluster_id = image_cluster_label).update(cluster_center = get_cluster_center_in_text(new_cluster_centers))
+        new_cluster_centers = [num / (prev_cluster_length + 1)
+                               for num in temp_numerator]
+        models.ClusterInfo.objects.filter(cluster_id=image_cluster_label).update(
+            cluster_center=get_cluster_center_in_text(new_cluster_centers))
 
     if flag:
         image_cluster_label = n + 1
-        new_clusterInfo = models.ClusterInfo(cluster_id = image_cluster_label, cluster_center = get_cluster_center_in_text(image_moments))
+        new_clusterInfo = models.ClusterInfo(
+            cluster_id=image_cluster_label, cluster_center=get_cluster_center_in_text(image_moments))
         new_clusterInfo.save()
 
     print(str(image_cluster_label) + " is the cluster ID of the new image")
@@ -93,18 +109,19 @@ def process_uploaded_image(image_id):
     if exact_match_flag:
         print("The exact match flag is True")
 
-    imageCluster = models.ImageCluster(cluster_id = image_cluster_label, image_id = image.id)
+    imageCluster = models.ImageCluster(
+        cluster_id=image_cluster_label, image_id=image.id)
     imageCluster.save()
 
     return image_cluster_label
 
 
 @shared_task
-def process_task(image_id, **kwargs):
+def process_task(post_id, image_id, **kwargs):
     # Your processing logic here
-    print("Received image: {}".format(image_id))
+    print("Received Post: {} image: {}".format(post_id, image_id))
     try:
-        print("Cluster Label: " + str(process_uploaded_image(image_id)))
+        print("Cluster Label: " + str(process_uploaded_image(post_id, image_id)))
         print("Processed image: {}".format(image_id))
     except Exception as e:
         print(traceback.format_exc())

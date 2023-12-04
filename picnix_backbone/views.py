@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.db.models import Count
 
 from . import models
@@ -27,7 +27,8 @@ def upload(request, format=None):
     post = models.Post(image=image, user=username, description=description)
     post.save()
 
-    process_task.delay(sender="Uploader", image_id=image.id)  # send post id
+    process_task.delay(sender="Uploader", post_id=post.id,
+                       image_id=image.id)  # send post id
     return JsonResponse({'message': 'Image uploaded successfully', 'body': {'postId': post.id}})
 
 
@@ -46,17 +47,33 @@ def get_post(request, id):
 def get_all_posts(request, format=None):
     PAGE_SIZE = 10
 
-    page = request.GET.get('page', 1)
+    page = int(request.GET.get('page', '1'))
     similar_to = request.GET.get('similar_to')
     duplicate_to = request.GET.get('duplicate_to')
-
-    if similar_to and duplicate_to:
-        return JsonResponse({'error': 'Bad Request'}, status=400)
 
     _from = (page-1)*PAGE_SIZE
     _to = (page)*PAGE_SIZE
 
-    posts = models.Post.objects.all().order_by('-timestamp')[_from:_to]
+    if similar_to and duplicate_to:
+        return JsonResponse({'error': 'Bad Request'}, status=400)
+
+    posts = []
+    if similar_to:
+        similar_post = get_object_or_404(models.Post, id=similar_to)
+        cluster_id = get_object_or_404(
+            models.ImageCluster, image_id=similar_post.image.id).cluster_id
+        image_ids_in_cluster = models.ImageCluster.objects.filter(
+            cluster_id=cluster_id).values_list('image_id', flat=True)
+        posts = models.Post.objects.filter(
+            image__id__in=image_ids_in_cluster).order_by('-timestamp')[_from:_to]
+    elif duplicate_to:
+        duplicate_post = get_object_or_404(models.Post, id=duplicate_to)
+        posts = get_list_or_404(
+            models.Post.objects.filter(
+                image__id=duplicate_post.image.id).order_by('-timestamp')[_from:_to]
+        )
+    else:
+        posts = models.Post.objects.all().order_by('-timestamp')[_from:_to]
 
     image_ids = list(map(lambda post: post.image.id, posts))
     image_similarity_map = get_image_similarities(image_ids)
