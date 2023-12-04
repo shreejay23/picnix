@@ -11,8 +11,7 @@ class ImageFeatures:
 
         return equalized
 
-    def calculate_moment_invariants(self, image_path):
-        preprocessed_image = self.__preprocess_image(image_path)
+    def calculate_moment_invariants(self, preprocessed_image):
         moments = cv2.moments(preprocessed_image)
 
         eta20 = moments['mu20'] / moments['m00']**2
