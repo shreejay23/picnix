@@ -3,7 +3,7 @@ import cv2
 
 
 class ImageFeatures:
-    def __preprocess_image(self, image_path):
+    def preprocess_image(self, image_path):
         image = cv2.imread(image_path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         resized = cv2.resize(gray, (256, 256), interpolation=cv2.INTER_CUBIC)
@@ -28,16 +28,3 @@ class ImageFeatures:
         phi3 = (eta30 - 3 * eta12)**2 + (3 * eta21 - eta03)**2
 
         return phi1, phi2, phi3
-
-    def extract_features_from_db_images(self, db_images):
-        features = []
-        labels = []
-
-        for db_image in db_images:
-            directories = db_image.image.url[1:].split('/')
-            img_path = os.path.join(*directories)
-            moments = self.calculate_moment_invariants(img_path)
-            features.append(moments)
-            labels.append(directories[-1])
-
-        return features, labels

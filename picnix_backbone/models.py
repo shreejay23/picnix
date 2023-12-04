@@ -17,3 +17,12 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return str(self.id)
+
+class ImageCluster(models.Model):
+    cluster_id = models.IntegerField()
+    image_id = models.IntegerField()
+
+class ClusterInfo(models.Model):
+    id = models.AutoField(primary_key=True)
+    cluster_id = models.IntegerField()
+    cluster_center = models.TextField()

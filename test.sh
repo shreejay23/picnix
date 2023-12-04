@@ -1,10 +1,16 @@
 # echo "\nCase 2"
 
-curl -X POST http://localhost:8000/api/upload/ \
-  -H "Content-Type: multipart/form-data" \
-  -F "image=@copy2.png" \
-  -F "username=your_username" \
-  -F "description=your_description"
+# curl -X POST http://localhost:8000/api/upload/ \
+#   -H "Content-Type: multipart/form-data" \
+#   -F "image=@copy2.png" \
+#   -F "username=your_username" \
+#   -F "description=your_description"
+
+echo "\nTest Process Img 10"
+curl -X POST -F "image=@../../AP/PicNix/images/test/image_27.png" http://localhost:8000/api/picnix/
+
+# echo "\nTest Process Img 10"
+# curl -X POST -F "image=@../../AP/PicNix/images/test/image_2.png" http://localhost:8000/api/picnix/
 
 # echo "\nCase 2"
 # curl -X POST -F "image=@../AP/PicNix/images/test/image_2.png" http://localhost:8000/upload/
