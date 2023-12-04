@@ -2,6 +2,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.db.models import Count
 
+from datetime import datetime, timezone
+
 from . import models
 from rest_framework.decorators import api_view
 from picnix_processor.tasks import process_task
@@ -77,15 +79,21 @@ def get_all_posts(request, format=None):
 
     image_ids = list(map(lambda post: post.image.id, posts))
     image_similarity_map = get_image_similarities(image_ids)
+    response_data = []
 
-    response_data = [{
-        'id': post.id,
-        'image': request.build_absolute_uri(post.image.image.url),
-        'desc': post.description,
-        'user': post.user,
-        'similars': image_similarity_map[post.image.id],
-        'duplicates': post.image.num_refs,
-    } for post in posts]
+    for post in posts:
+        epoch_time = int(post.timestamp.replace(
+            tzinfo=timezone.utc).timestamp())
+
+        response_data.append({
+            'id': post.id,
+            'image': request.build_absolute_uri(post.image.image.url),
+            'desc': post.description,
+            'user': post.user,
+            'similars': image_similarity_map[post.image.id],
+            'duplicates': post.image.num_refs,
+            'time': epoch_time,
+        })
 
     return JsonResponse(response_data, safe=False)
 
