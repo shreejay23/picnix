@@ -19,6 +19,7 @@ from . import views
 
 urlpatterns = [
     path('post/<int:id>/', views.get_post),
+    path('posts/', views.get_all_posts),
     path("upload/", views.upload),
     # will be replaced by a queue
     path("delete_images/", views.delete_all_images)
