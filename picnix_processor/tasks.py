@@ -31,7 +31,7 @@ def process_uploaded_image(post_id, image_id):
     image = get_object_or_404(models.Image, id=image_id)
     img_path = get_image_path(image)
 
-    threshold = 0.00003
+    threshold = 0.00006
 
     clusterInfo_objects = models.ClusterInfo.objects.all().order_by('cluster_id')
     cluster_centers = [get_cluster_center_in_nums(
@@ -66,11 +66,13 @@ def process_uploaded_image(post_id, image_id):
     ind = sorted_clusters_indices[0]
     exact_match_flag = False
     exact_match_image = None
-    exact_match_image, exact_match_temp_flag = check_for_exact_image_match(cluster_labels[sorted_clusters_indices[-1]], img_path)
+    exact_match_image, exact_match_temp_flag = check_for_exact_image_match(
+        cluster_labels[sorted_clusters_indices[-1]], img_path)
     if scores[sorted_clusters_indices[-1]] <= threshold and exact_match_temp_flag:
         ind = sorted_clusters_indices[-1]
         exact_match_flag = True
-    exact_match_image, exact_match_temp_flag = check_for_exact_image_match(cluster_labels[sorted_clusters_indices[0]], img_path)
+    exact_match_image, exact_match_temp_flag = check_for_exact_image_match(
+        cluster_labels[sorted_clusters_indices[0]], img_path)
     if (exact_match_flag == False) and exact_match_temp_flag:
         exact_match_flag = True
 
@@ -110,13 +112,14 @@ def process_uploaded_image(post_id, image_id):
     if exact_match_flag:
         to_assign_image_id = exact_match_image.id
         print("The exact match flag is True")
-        models.Post.objects.filter(id = post_id).update(image = exact_match_image)
+        models.Post.objects.filter(id=post_id).update(image=exact_match_image)
         image.delete()
-        models.Image.objects.filter(id = exact_match_image.id).update(num_refs = exact_match_image.num_refs + 1)
+        models.Image.objects.filter(id=exact_match_image.id).update(
+            num_refs=exact_match_image.num_refs + 1)
         # TODO Delete Handling
 
     imageCluster = models.ImageCluster(
-        cluster_id = image_cluster_label, image_id = to_assign_image_id)
+        cluster_id=image_cluster_label, image_id=to_assign_image_id)
     imageCluster.save()
 
     return image_cluster_label
