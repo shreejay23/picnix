@@ -2,9 +2,15 @@
 
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
-  -F "image=@../../AP/PicNix/images/test/image_10.png" \
+  -F "image=@../../AP/PicNix/images/test/image_60.jpg" \
   -F "username=your_username" \
   -F "description=your_description"
+
+# curl -X POST http://localhost:8000/api/upload/ \
+#   -H "Content-Type: multipart/form-data" \
+#   -F "image=@../../AP/PicNix/images/test/image_61.png" \
+#   -F "username=your_username" \
+#   -F "description=your_description"
 
 # echo "\nTest Process Img 10"
 # curl -X POST -F "image=@../../AP/PicNix/images/test/image_27.png" http://localhost:8000/api/picnix/

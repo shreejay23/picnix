@@ -1,9 +1,6 @@
-import os
 import traceback
 import numpy as np
 from celery import shared_task
-from sklearn.cluster import KMeans
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from picnix_backbone import models
@@ -26,15 +23,15 @@ def check_for_exact_image_match(cluster_label, image1_path):
         image2 = get_object_or_404(models.Image, id=imageCluster.image_id)
         image2_path = get_image_path(image2)
         if is_exactly_same(image1_path, image2_path):
-            return True
-    return False
+            return image2, True
+    return None, False
 
 
 def process_uploaded_image(post_id, image_id):
     image = get_object_or_404(models.Image, id=image_id)
     img_path = get_image_path(image)
 
-    threshold = 0.0003
+    threshold = 0.00003
 
     clusterInfo_objects = models.ClusterInfo.objects.all().order_by('cluster_id')
     cluster_centers = [get_cluster_center_in_nums(
@@ -68,10 +65,13 @@ def process_uploaded_image(post_id, image_id):
 
     ind = sorted_clusters_indices[0]
     exact_match_flag = False
-    if scores[sorted_clusters_indices[-1]] <= threshold and check_for_exact_image_match(cluster_labels[sorted_clusters_indices[-1]], img_path):
+    exact_match_image = None
+    exact_match_image, exact_match_temp_flag = check_for_exact_image_match(cluster_labels[sorted_clusters_indices[-1]], img_path)
+    if scores[sorted_clusters_indices[-1]] <= threshold and exact_match_temp_flag:
         ind = sorted_clusters_indices[-1]
         exact_match_flag = True
-    elif check_for_exact_image_match(cluster_labels[sorted_clusters_indices[0]], img_path):
+    exact_match_image, exact_match_temp_flag = check_for_exact_image_match(cluster_labels[sorted_clusters_indices[0]], img_path)
+    if (exact_match_flag == False) and exact_match_temp_flag:
         exact_match_flag = True
 
     n = len(cluster_labels)
@@ -81,7 +81,7 @@ def process_uploaded_image(post_id, image_id):
 
     if scores[ind] > threshold:
         flag = True
-    else:
+    elif not exact_match_flag:
         near_duplicate_cluster = models.ClusterInfo.objects.get(
             cluster_id=image_cluster_label)
         near_duplicate_cluster_centers = get_cluster_center_in_nums(
@@ -106,11 +106,17 @@ def process_uploaded_image(post_id, image_id):
 
     print(str(image_cluster_label) + " is the cluster ID of the new image")
 
+    to_assign_image_id = image.id
     if exact_match_flag:
+        to_assign_image_id = exact_match_image.id
         print("The exact match flag is True")
+        models.Post.objects.filter(id = post_id).update(image = exact_match_image)
+        image.delete()
+        models.Image.objects.filter(id = exact_match_image.id).update(num_refs = exact_match_image.num_refs + 1)
+        # TODO Delete Handling
 
     imageCluster = models.ImageCluster(
-        cluster_id=image_cluster_label, image_id=image.id)
+        cluster_id = image_cluster_label, image_id = to_assign_image_id)
     imageCluster.save()
 
     return image_cluster_label
