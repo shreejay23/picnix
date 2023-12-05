@@ -23,7 +23,7 @@ def upload(request, format=None):
     if not username or not description:
         return JsonResponse({'error': 'All required fields not present'}, status=400)
 
-    image = models.Image(image=uploaded_image, num_refs=0)
+    image = models.Image(image=uploaded_image, num_refs=1)
     image.save()
 
     post = models.Post(image=image, user=username, description=description)
@@ -90,8 +90,8 @@ def get_all_posts(request, format=None):
             'image': request.build_absolute_uri(post.image.image.url),
             'desc': post.description,
             'user': post.user,
-            'similars': image_similarity_map[post.image.id],
-            'duplicates': post.image.num_refs,
+            'similars': image_similarity_map[post.image.id] - 1,
+            'duplicates': post.image.num_refs - 1,
             'time': epoch_time,
         })
 
