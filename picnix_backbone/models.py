@@ -1,4 +1,5 @@
 from django.db import models
+import time
 
 
 class ImageCluster(models.Model):
@@ -28,7 +29,7 @@ class Post(models.Model):
     image = models.ForeignKey(Image, on_delete=models.DO_NOTHING)
     user = models.TextField(max_length=20)
     description = models.TextField(max_length=100, default='')
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.IntegerField(default=int(time.time()))
 
     def __str__(self) -> str:
         return str(self.id)

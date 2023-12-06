@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.db.models import Count
 
-from datetime import datetime, timezone
+import time
 
 from . import models
 from rest_framework.decorators import api_view
@@ -19,6 +19,7 @@ def upload(request, format=None):
     data = request.data
     username = data.get('username', '')
     description = data.get('description', '')
+    timestamp = int(data.get('timestamp', time.time()))
 
     if not username or not description:
         return JsonResponse({'error': 'All required fields not present'}, status=400)
@@ -26,7 +27,8 @@ def upload(request, format=None):
     image = models.Image(image=uploaded_image, num_refs=1)
     image.save()
 
-    post = models.Post(image=image, user=username, description=description)
+    post = models.Post(image=image, user=username,
+                       description=description, timestamp=timestamp)
     post.save()
 
     process_task.delay(sender="Uploader", post_id=post.id,
@@ -82,9 +84,6 @@ def get_all_posts(request, format=None):
     response_data = []
 
     for post in posts:
-        epoch_time = int(post.timestamp.replace(
-            tzinfo=timezone.utc).timestamp())
-
         response_data.append({
             'id': post.id,
             'image': request.build_absolute_uri(post.image.image.url),
@@ -92,7 +91,7 @@ def get_all_posts(request, format=None):
             'user': post.user,
             'similars': image_similarity_map[post.image.id] - 1,
             'duplicates': post.image.num_refs - 1,
-            'time': epoch_time,
+            'time': post.timestamp,
         })
 
     return JsonResponse(response_data, safe=False)
