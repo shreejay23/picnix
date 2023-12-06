@@ -4,11 +4,15 @@ curl -X POST http://localhost:8000/api/upload/ \
   -F "username=your_username" \
   -F "description=your_description"
 
+sleep 2
+
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
   -F "image=@test-images/monkey-2.jpeg" \
   -F "username=your_username" \
   -F "description=your_description"
+
+sleep 2
 
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
@@ -16,11 +20,15 @@ curl -X POST http://localhost:8000/api/upload/ \
   -F "username=your_username" \
   -F "description=your_description"
 
+sleep 2
+
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
   -F "image=@test-images/image_60.jpg" \
   -F "username=your_username" \
   -F "description=your_description"
+
+sleep 2
 
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
@@ -28,11 +36,15 @@ curl -X POST http://localhost:8000/api/upload/ \
   -F "username=your_username" \
   -F "description=your_description"
 
+sleep 2
+
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
   -F "image=@test-images/image_45.png" \
   -F "username=your_username" \
   -F "description=your_description"
+
+sleep 2
 
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
@@ -40,17 +52,23 @@ curl -X POST http://localhost:8000/api/upload/ \
   -F "username=your_username" \
   -F "description=your_description"
 
+sleep 2
+
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
   -F "image=@test-images/image_27.png" \
   -F "username=your_username" \
   -F "description=your_description"
 
+sleep 2
+
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
   -F "image=@test-images/image_28.png" \
   -F "username=your_username" \
   -F "description=your_description"
+
+sleep 2
 
 # Images 75 and 76 are from DAALE
 
@@ -72,11 +90,15 @@ curl -X POST http://localhost:8000/api/upload/ \
   -F "username=your_username" \
   -F "description=your_description"
 
+sleep 2
+
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
   -F "image=@test-images/image_3.png" \
   -F "username=your_username" \
   -F "description=your_description"
+
+sleep 2
 
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \

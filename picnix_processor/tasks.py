@@ -84,6 +84,7 @@ def process_uploaded_image(post_id, image_id):
     if scores[ind] > threshold:
         flag = True
     elif not exact_match_flag:
+        print(image_cluster_label)
         near_duplicate_cluster = models.ClusterInfo.objects.get(
             cluster_id=image_cluster_label)
         near_duplicate_cluster_centers = get_cluster_center_in_nums(
