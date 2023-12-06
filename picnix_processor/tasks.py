@@ -116,7 +116,6 @@ def process_uploaded_image(post_id, image_id):
         image.delete()
         models.Image.objects.filter(id=exact_match_image.id).update(
             num_refs=exact_match_image.num_refs + 1)
-        # TODO Delete Handling
 
     imageCluster = models.ImageCluster(
         cluster_id=image_cluster_label, image_id=to_assign_image_id)

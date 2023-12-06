@@ -1,43 +1,85 @@
-# echo "\nCase 2"
-
 curl -X POST http://localhost:8000/api/upload/ \
   -H "Content-Type: multipart/form-data" \
-  -F "image=@../../AP/PicNix/images/test/image_60.jpg" \
+  -F "image=@test-images/monkey.webp" \
   -F "username=your_username" \
   -F "description=your_description"
 
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/monkey-2.jpeg" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_62.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_60.jpg" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_59.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_45.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_49.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_27.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_28.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
+
+# Images 75 and 76 are from DAALE
+
 # curl -X POST http://localhost:8000/api/upload/ \
 #   -H "Content-Type: multipart/form-data" \
-#   -F "image=@../../AP/PicNix/images/test/image_61.png" \
+#   -F "image=@test-images/image_75.png" \
 #   -F "username=your_username" \
 #   -F "description=your_description"
 
-# echo "\nTest Process Img 10"
-# curl -X POST -F "image=@../../AP/PicNix/images/test/image_27.png" http://localhost:8000/api/picnix/
+# curl -X POST http://localhost:8000/api/upload/ \
+#   -H "Content-Type: multipart/form-data" \
+#   -F "image=@test-images/image_76.png" \
+#   -F "username=your_username" \
+#   -F "description=your_description"
 
-# echo "\nTest Process Img 10"
-# curl -X POST -F "image=@../../AP/PicNix/images/test/image_2.png" http://localhost:8000/api/picnix/
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_2.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
 
-# echo "\nCase 2"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_2.png" http://localhost:8000/upload/
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_3.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
 
-# echo "\nCase 3"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_3.png" http://localhost:8000/upload/
-
-# echo "\nCase 4"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_9.png" http://localhost:8000/upload/
-
-# echo "\nCase 5"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_10.png" http://localhost:8000/upload/
-
-# echo "\nCase 6"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_14.png" http://localhost:8000/upload/
-
-# echo "\nCase 7"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_27.png" http://localhost:8000/upload/
-
-# echo "\nCase 8"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_45.png" http://localhost:8000/upload/
-
-# echo "\nCase 9"
-# curl -X POST -F "image=@../AP/PicNix/images/test/image_49.png" http://localhost:8000/upload/
+curl -X POST http://localhost:8000/api/upload/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@test-images/image_61.png" \
+  -F "username=your_username" \
+  -F "description=your_description"
