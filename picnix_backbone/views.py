@@ -46,6 +46,8 @@ def get_post(request, id):
 
     return JsonResponse(response_data)
 
+# just checking
+
 
 @api_view(['GET'])
 def get_all_posts(request, format=None):
