@@ -48,6 +48,8 @@ def get_post(request, id):
 
 # just checking
 
+# need to remove this change
+
 
 @api_view(['GET'])
 def get_all_posts(request, format=None):
